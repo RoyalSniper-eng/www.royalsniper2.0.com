@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>RoyalSniper 2.0</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg-deep:    #050a14;
+    --bg-card:    #0b1628;
+    --bg-card2:   #0d1a30;
+    --border:     #1a2d4a;
+    --border-glow:#1e3f6e;
+    --gold:       #c9a227;
+    --gold-light: #e8c150;
+    --gold-dim:   #7a5f15;
+    --cyan:       #00d4ff;
+    --cyan-dim:   #0088aa;
+    --green:      #00e676;
+    --green-bg:   #003320;
+    --red:        #ff3d57;
+    --red-bg:     #2a0010;
+    --blue-btn:   #1565e8;
+    --text-main:  #e8edf5;
+    --text-dim:   #4a6080;
+    --text-mid:   #7a9cc0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ===== LOGIN ===== */
+  #loginScreen {
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 50% 30%, #0a1f3d 0%, var(--bg-deep) 70%);
+    padding: 40px 24px;
+  }
+
+  .login-logo {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, #1565e8, #0d47a1);
+    border-radius: 22px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 22px;
+    box-shadow: 0 0 40px rgba(21,101,232,0.5);
+    font-size: 36px;
+  }
+
+  .login-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .login-title span { color: var(--gold); }
+
+  .login-sub {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--text-mid);
+    text-align: center;
+    margin-bottom: 42px;
+  }
+
+  .login-form { width: 100%; max-width: 360px; }
+
+  .field-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-mid);
+    margin-bottom: 8px;
+  }
+
+  .field-input {
+    width: 100%;
+    background: #0d1e35;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-size: 15px;
+    color: var(--text-main);
+    margin-bottom: 20px;
+    outline: none;
+    transition: border-color .2s;
+    font-family: 'Inter', sans-serif;
+  }
+  .field-input::placeholder { color: var(--text-dim); }
+  .field-input:focus { border-color: var(--blue-btn); }
+
+  .btn-access {
+    width: 100%;
+    background: linear-gradient(135deg, #1565e8, #0d47a1);
+    border: none;
+    border-radius: 14px;
+    padding: 18px;
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 0 30px rgba(21,101,232,0.4);
+    transition: opacity .2s, transform .1s;
+    margin-bottom: 20px;
+  }
+  .btn-access:active { opacity: .85; transform: scale(.98); }
+
+  .login-help {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .login-help a { color: var(--blue-btn); text-decoration: none; }
+
+  /* ===== APP SHELL ===== */
+  #appShell { background: var(--bg-deep); }
+
+  /* TOP BAR */
+  .topbar {
+    padding: 14px 20px 10px;
+    background: var(--bg-deep);
+  }
+  .topbar-brand {
+    font-family: 'Orbitron', monospace;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 1px;
+  }
+  .topbar-brand span { color: var(--gold); }
+  .topbar-ver {
+    display: inline-block;
+    background: var(--gold);
+    color: #000;
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 6px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .topbar-sub {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-mid);
+  }
+  .topbar-user {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-top: 6px;
+  }
+  .topbar-acct {
+    font-size: 12px;
+    color: var(--text-mid);
+  }
+
+  /* NAV */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+    display: flex;
+    z-index: 100;
+  }
+  .nav-btn {
+    flex: 1;
+    padding: 12px 0 10px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 10px;
+    letter-spacing: 1px;
+    transition: color .2s;
+  }
+  .nav-btn.active { color: var(--gold); }
+  .nav-btn svg { width: 20px; height: 20px; }
+
+  /* PAGE CONTENT */
+  .page { display: none; padding: 0 16px 90px; }
+  .page.active { display: block; }
+
+  /* SECTION HEADER */
+  .section-hdr {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-mid);
+    margin: 18px 0 10px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-mid);
+    margin-bottom: 12px;
+  }
+
+  /* BROKER ROW */
+  .broker-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .broker-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dot-green { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .dot-red   { width: 8px; height: 8px; border-radius: 50%; background: var(--red); }
+  .dot-gray  { width: 8px; height: 8px; border-radius: 50%; background: #555; }
+  .badge {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    border: 1px solid;
+  }
+  .badge-gold  { border-color: var(--gold); color: var(--gold); }
+  .badge-gray  { border-color: var(--border); color: var(--text-mid); }
+  .badge-green { border-color: var(--green); color: var(--green); background: var(--green-bg); }
+  .badge-red   { border-color: var(--red);   color: var(--red);   background: var(--red-bg); }
+  .badge-cyan  { border-color: var(--cyan);  color: var(--cyan);  background: #001a22; }
+  .badge-blue  { border-color: #3a7ff5; color: #3a7ff5; background: #041430; }
+
+  .info-notice {
+    background: #0a1e35;
+    border: 1px solid var(--cyan-dim);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--cyan);
+    font-family: 'Rajdhani', sans-serif;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* METRICS GRID */
+  .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .metric-box {
+    background: var(--bg-card2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .metric-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-mid);
+    margin-bottom: 8px;
+  }
+  .metric-val {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .metric-dash { color: var(--text-dim); }
+
+  .float-row {
+    background: var(--bg-card2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .float-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-mid);
+  }
+  .float-val {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  /* ROBOT STATUS */
+  .robot-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .status-pill {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .status-stopped { background: var(--red-bg); color: var(--red); border: 1px solid var(--red); }
+  .status-running { background: var(--green-bg); color: var(--green); border: 1px solid var(--green); }
+  .mt5-status { font-family: 'Rajdhani', sans-serif; font-size: 13px; color: var(--text-mid); }
+  .last-seen { font-family: 'Rajdhani', sans-serif; font-size: 12px; color: var(--text-dim); display: flex; align-items: center; gap: 6px; }
+
+  /* START BUTTON */
+  .btn-start {
+    width: 100%;
+    background: linear-gradient(135deg, #1a5c1a, #0f3d0f);
+    border: 1px solid #1a7a1a;
+    border-radius: 16px;
+    padding: 20px;
+    font-family: 'Orbitron', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--green);
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(0,230,118,0.15);
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    transition: opacity .2s, transform .1s;
+    margin-bottom: 12px;
+  }
+  .btn-start:active { opacity: .85; transform: scale(.98); }
+
+  /* LIVE STATS */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .stat-box {
+    background: var(--bg-card2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 8px;
+    text-align: center;
+  }
+  .stat-val {
+    font-family: 'Orbitron', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .stat-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-mid);
+  }
+
+  /* POSITIONS TABLE */
+  .pos-table { width: 100%; border-collapse: collapse; }
+  .pos-table th {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    padding: 6px 4px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .pos-table td {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    padding: 10px 4px;
+    border-bottom: 1px solid #0d1e35;
+    color: var(--text-main);
+  }
+  .no-positions {
+    text-align: center;
+    padding: 24px 0;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+  }
+
+  /* SETTINGS PAGE */
+  .page-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .page-sub {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: var(--text-mid);
+    margin-bottom: 16px;
+  }
+
+  .stepper {
+    background: var(--bg-card2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 4px;
+  }
+  .stepper-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-mid);
+    font-size: 24px;
+    padding: 14px 20px;
+    cursor: pointer;
+    transition: color .15s;
+  }
+  .stepper-btn:active { color: var(--gold); }
+  .stepper-val {
+    font-family: 'Orbitron', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .info-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-key {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--text-mid);
+  }
+  .info-val {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: 1px;
+  }
+
+  .btn-save {
+    width: 100%;
+    background: linear-gradient(135deg, var(--blue-btn), #0d47a1);
+    border: none;
+    border-radius: 14px;
+    padding: 18px;
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #fff;
+    cursor: pointer;
+    margin-top: 8px;
+    box-shadow: 0 0 25px rgba(21,101,232,0.3);
+    transition: opacity .2s;
+  }
+  .btn-save:active { opacity: .8; }
+
+  /* ACCOUNT PAGE */
+  .avatar-card {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 12px;
+  }
+  .avatar {
+    width: 54px; height: 54px;
+    background: linear-gradient(135deg, var(--blue-btn), #0d47a1);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 900;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .avatar-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .avatar-email {
+    font-size: 12px;
+    color: var(--text-mid);
+  }
+
+  .pairs-val { color: var(--text-main); font-size: 13px; }
+
+  .btn-logout {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--red);
+    border-radius: 14px;
+    padding: 16px;
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--red);
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background .2s;
+  }
+  .btn-logout:active { background: var(--red-bg); }
+
+  /* GOLD GLOW TOPBAR LINE */
+  .topbar-line { height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 0 0 0; opacity: .4; }
+
+  /* SYNC BTN */
+  .btn-sync {
+    background: transparent;
+    border: 1px solid var(--border-glow);
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--cyan);
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: border-color .2s;
+  }
+  .btn-sync:active { border-color: var(--cyan); }
+
+  .sync-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+
+  /* MAX TRADES SECTION */
+  .max-section { margin-bottom: 12px; }
+
+  /* scrollable content */
+  .scroll-content { overflow-y: auto; }
+
+  /* account overview header row */
+  .account-hdr-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+
+  /* TRADING MODE BUTTONS */
+  .mode-btn {
+    background: var(--bg-card2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 6px;
+    cursor: pointer;
+    text-align: center;
+    transition: all .2s;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .mode-btn.active {
+    border-color: var(--gold);
+    background: linear-gradient(135deg, #1a1400, #0d1628);
+    box-shadow: 0 0 16px rgba(201,162,39,0.2);
+  }
+  .mode-icon { font-size: 22px; line-height: 1; }
+  .mode-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--text-main);
+  }
+  .mode-btn.active .mode-name { color: var(--gold); }
+  .mode-desc {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: .5px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="loginScreen" class="screen active">
+  <div class="login-logo">👑</div>
+  <div class="login-title">ROYAL<span>SNIPER</span></div>
+  <div class="login-title" style="font-size:16px;color:var(--gold);margin-top:-6px;letter-spacing:4px;">2.0</div>
+  <div class="login-sub" style="margin-top:6px;">EXPERT ADVISOR · MT5 PLATFORM</div>
+
+  <div class="login-form">
+    <div class="field-label">LICENSE KEY</div>
+    <input class="field-input" id="licenseInput" type="text" placeholder="RS-XXXX-XXXX-XXXX">
+
+    <div class="field-label">SECRET CODE</div>
+    <input class="field-input" id="secretInput" type="password" placeholder="Your secret code">
+
+    <button class="btn-access" onclick="doLogin()">ACCESS DASHBOARD</button>
+
+    <div class="login-help">No access? <a href="#">Contact support</a></div>
+  </div>
+</div>
+
+<!-- ===== APP SHELL ===== -->
+<div id="appShell" class="screen">
+  <div class="topbar">
+    <div>
+      <span class="topbar-brand">ROYAL<span>SNIPER</span></span>
+      <span class="topbar-ver">V2.0</span>
+    </div>
+    <div class="topbar-sub">EXPERT ADVISOR · MT5 PLATFORM</div>
+  </div>
+  <div class="topbar-line"></div>
+
+  <!-- ===== HOME PAGE ===== -->
+  <div id="homePage" class="page active scroll-content">
+    <!-- ACCOUNT OVERVIEW -->
+    <div class="section-hdr">ACCOUNT OVERVIEW</div>
+    <div class="card">
+      <div class="sync-row">
+        <div>
+          <div class="broker-name"><span class="dot-gray"></span><span style="color:var(--text-dim);">Not Connected</span></div>
+          <div style="font-family:'Rajdhani',sans-serif;font-size:11px;color:var(--text-dim);letter-spacing:1px;margin-top:2px;">— · —</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="badge badge-gray" style="color:var(--text-dim);">—</span>
+        </div>
+      </div>
+
+      <div class="info-notice">
+        <span style="font-size:16px;">●</span>
+        MT5 #436079845 DETECTED · CONNECT MT5 TO SYNC BALANCE
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <div class="metric-label">BALANCE</div>
+          <div class="metric-val" id="homeBalance">$0.00</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">EQUITY</div>
+          <div class="metric-val" id="homeEquity">$0.00</div>
+        </div>
+      </div>
+
+      <div class="float-row">
+        <span class="float-label">FLOATING P&amp;L</span>
+        <span class="float-val">+$0.00</span>
+      </div>
+    </div>
+
+    <!-- ROBOT STATUS -->
+    <div class="section-hdr">ROBOT STATUS</div>
+    <div class="card">
+      <div class="robot-row">
+        <div class="status-pill status-stopped" id="statusPill">
+          <span style="width:8px;height:8px;border-radius:50%;background:var(--red);display:inline-block;"></span>
+          STOPPED
+        </div>
+        <div class="mt5-status">MT5: Offline</div>
+      </div>
+      <div class="last-seen"><span class="dot-gray"></span> Last seen: 6h ago</div>
+    </div>
+
+    <!-- START TRADING -->
+    <button class="btn-start" onclick="toggleTrading()">
+      <span style="font-size:18px;">▶</span> <span id="tradingBtnText">START TRADING</span>
+    </button>
+
+    <!-- LIVE STATS -->
+    <div class="section-hdr">LIVE STATS</div>
+    <div class="card" style="padding:12px;">
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-val">0</div>
+          <div class="stat-label">OPEN TRADES</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" style="font-size:13px;">XAUUSD</div>
+          <div class="stat-label">PAIR</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="liveMode" style="color:var(--gold);font-size:13px;">SCALP</div>
+          <div class="stat-label">MODE</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPEN POSITIONS -->
+    <div class="section-hdr">OPEN POSITIONS</div>
+    <div class="card">
+      <table class="pos-table">
+        <thead>
+          <tr>
+            <th>SYMBOL</th><th>TYPE</th><th>VOL</th><th>OPEN</th><th>P&amp;L</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="5" class="no-positions">NO OPEN POSITIONS</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- ===== SETTINGS PAGE ===== -->
+  <div id="settingsPage" class="page scroll-content">
+    <div style="padding-top:14px;">
+      <div class="page-title">SETTINGS</div>
+      <div class="page-sub">EA configuration &amp; risk controls</div>
+    </div>
+
+    <div class="section-hdr">TRADING MODE</div>
+    <div class="card">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+        <button class="mode-btn active" id="modeScalp" onclick="setMode('scalp')">
+          <div class="mode-icon">⚡</div>
+          <div class="mode-name">SCALP</div>
+          <div class="mode-desc">Fast in &amp; out</div>
+        </button>
+        <button class="mode-btn" id="modeSniper" onclick="setMode('sniper')">
+          <div class="mode-icon">🎯</div>
+          <div class="mode-name">SNIPER</div>
+          <div class="mode-desc">Precision entry</div>
+        </button>
+        <button class="mode-btn" id="modeSwing" onclick="setMode('swing')">
+          <div class="mode-icon">📈</div>
+          <div class="mode-name">SWING</div>
+          <div class="mode-desc">Hold &amp; ride</div>
+        </button>
+      </div>
+      <div style="margin-top:12px;padding:10px 14px;background:#050a14;border-radius:10px;border:1px solid var(--border);">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:2px;color:var(--text-mid);margin-bottom:4px;">ACTIVE MODE</div>
+        <div id="modeDesc" style="font-family:'Rajdhani',sans-serif;font-size:13px;color:var(--gold);">Scalp Mode — Short timeframe entries, tight SL/TP, high frequency</div>
+      </div>
+    </div>
+
+    <div class="section-hdr">LOT SIZE</div>
+    <div class="card">
+      <div class="stepper">
+        <button class="stepper-btn" onclick="adjLot(-1)">−</button>
+        <div style="text-align:center;">
+          <span class="stepper-val" id="lotSize">0.10</span>
+          <div style="font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);margin-top:2px;">MAX 5.00</div>
+        </div>
+        <button class="stepper-btn" onclick="adjLot(1)">+</button>
+      </div>
+      <div style="margin-top:12px;">
+        <input type="range" id="lotSlider" min="1" max="500" value="10" step="1"
+          oninput="syncLotFromSlider(this.value)"
+          style="width:100%;accent-color:#3a7ff5;cursor:pointer;">
+        <div style="display:flex;justify-content:space-between;font-family:'Rajdhani',sans-serif;font-size:10px;color:var(--text-dim);letter-spacing:1px;margin-top:4px;">
+          <span>0.01</span><span>1.00</span><span>2.50</span><span>5.00</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-hdr">MAX OPEN TRADES</div>
+    <div class="card" style="padding:4px;">
+      <div class="stepper">
+        <button class="stepper-btn" onclick="adjMaxOpen(-1)">−</button>
+        <span class="stepper-val" id="maxOpenTrades">3</span>
+        <button class="stepper-btn" onclick="adjMaxOpen(1)">+</button>
+      </div>
+    </div>
+
+    <div class="section-hdr">EA SYSTEM STATUS</div>
+    <div class="card">
+      <div class="info-row">
+        <span class="info-key">EA VERSION</span>
+        <span class="badge badge-blue">V2.0.1</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">EA LICENCE</span>
+        <span class="badge badge-green">● ACTIVE</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">MT5 CONNECTION</span>
+        <span class="badge badge-green">● LIVE</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">STRATEGY</span>
+        <span class="info-val">Auto Scalping</span>
+      </div>
+    </div>
+
+    <div class="section-hdr">BROKER CONNECTION</div>
+    <div class="card">
+      <div class="info-row">
+        <span class="info-key">BROKER</span>
+        <span class="info-val" style="color:var(--text-dim);">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">ACCOUNT</span>
+        <span class="info-val" style="color:var(--text-dim);">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">SERVER</span>
+        <span class="info-val" style="color:var(--text-dim);">—</span>
+      </div>
+    </div>
+
+    <button class="btn-save" onclick="showToast('Settings saved!')">SAVE SETTINGS</button>
+  </div>
+
+  <!-- ===== ACCOUNT PAGE ===== -->
+  <div id="accountPage" class="page scroll-content">
+    <div style="padding-top:14px;">
+      <div class="page-title">ACCOUNT</div>
+      <div class="page-sub">Your profile &amp; EA info</div>
+    </div>
+
+    <div class="avatar-card">
+      <div class="avatar" style="background:linear-gradient(135deg,#1a2d4a,#0d1628);color:var(--text-dim);">?</div>
+      <div>
+        <div class="avatar-name" style="color:var(--text-dim);">—</div>
+        <div class="avatar-email">—</div>
+      </div>
+    </div>
+
+    <div class="section-hdr">BROKER DETAILS</div>
+    <div class="card">
+      <div class="info-row"><span class="info-key">BROKER</span><span class="info-val" style="color:var(--text-dim);">—</span></div>
+      <div class="info-row"><span class="info-key">ACCOUNT NO.</span><span class="info-val" style="color:var(--text-dim);">—</span></div>
+      <div class="info-row"><span class="info-key">SERVER</span><span class="info-val" style="color:var(--text-dim);">—</span></div>
+      <div class="info-row"><span class="info-key">TYPE</span><span class="badge badge-cyan">LIVE</span></div>
+    </div>
+
+    <div class="section-hdr">EA SYSTEM INFO</div>
+    <div class="card">
+      <div class="info-row"><span class="info-key">EA NAME</span><span class="info-val">Royal Sniper V2.0</span></div>
+      <div class="info-row"><span class="info-key">EA VERSION</span><span class="badge badge-blue">V2.0.1</span></div>
+      <div class="info-row"><span class="info-key">LICENCE</span><span class="badge badge-green">● ACTIVE</span></div>
+      <div class="info-row"><span class="info-key">MT5 STATUS</span><span class="badge badge-green">● CONNECTED</span></div>
+      <div class="info-row">
+        <span class="info-key">PAIRS</span>
+        <span class="pairs-val">XAU/USD · GBP/USD · NAS100 · BTC/USD</span>
+      </div>
+    </div>
+
+    <div class="section-hdr">LICENCE</div>
+    <div class="card">
+      <div class="info-row"><span class="info-key">KEY</span><span class="info-val" style="font-size:11px;color:var(--text-mid);">RS-••••-••••-••••</span></div>
+      <div class="info-row"><span class="info-key">STATUS</span><span class="badge badge-green">● ACTIVE</span></div>
+      <div class="info-row"><span class="info-key">EXPIRES</span><span class="info-val">LIFETIME</span></div>
+    </div>
+
+    <button class="btn-logout" onclick="doLogout()">SIGN OUT</button>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="navHome" onclick="switchPage('home')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
+      HOME
+    </button>
+    <button class="nav-btn" id="navSettings" onclick="switchPage('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      SETTINGS
+    </button>
+    <button class="nav-btn" id="navAccount" onclick="switchPage('account')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      ACCOUNT
+    </button>
+  </nav>
+</div>
+
+<!-- TOAST -->
+<div id="toast" style="position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:#0d1e35;border:1px solid var(--gold);color:var(--gold);font-family:'Rajdhani',sans-serif;font-size:13px;letter-spacing:2px;padding:12px 24px;border-radius:10px;opacity:0;transition:all .3s;pointer-events:none;z-index:999;white-space:nowrap;"></div>
+
+<script>
+let trading = false;
+let lotVal = 10; // units of 0.01
+let maxOpenVal = 3;
+
+function doLogin() {
+  const lic = document.getElementById('licenseInput').value.trim();
+  const sec = document.getElementById('secretInput').value.trim();
+  if (!lic || !sec) { showToast('Enter license & secret code'); return; }
+  document.getElementById('loginScreen').classList.remove('active');
+  document.getElementById('appShell').classList.add('active');
+}
+
+function doLogout() {
+  document.getElementById('appShell').classList.remove('active');
+  document.getElementById('loginScreen').classList.add('active');
+  document.getElementById('licenseInput').value = '';
+  document.getElementById('secretInput').value = '';
+}
+
+function switchPage(p) {
+  ['home','settings','account'].forEach(id => {
+    document.getElementById(id+'Page').classList.remove('active');
+    document.getElementById('nav'+id.charAt(0).toUpperCase()+id.slice(1)).classList.remove('active');
+  });
+  document.getElementById(p+'Page').classList.add('active');
+  document.getElementById('nav'+p.charAt(0).toUpperCase()+p.slice(1)).classList.add('active');
+}
+
+function toggleTrading() {
+  trading = !trading;
+  const pill = document.getElementById('statusPill');
+  const btn  = document.getElementById('tradingBtnText');
+  if (trading) {
+    pill.className = 'status-pill status-running';
+    pill.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;"></span> RUNNING';
+    btn.textContent = 'STOP TRADING';
+    document.querySelector('.btn-start').style.background = 'linear-gradient(135deg,#5c1a1a,#3d0f0f)';
+    document.querySelector('.btn-start').style.borderColor = '#7a1a1a';
+    document.querySelector('.btn-start').style.color = 'var(--red)';
+  } else {
+    pill.className = 'status-pill status-stopped';
+    pill.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:var(--red);display:inline-block;"></span> STOPPED';
+    btn.textContent = 'START TRADING';
+    document.querySelector('.btn-start').style.background = 'linear-gradient(135deg,#1a5c1a,#0f3d0f)';
+    document.querySelector('.btn-start').style.borderColor = '#1a7a1a';
+    document.querySelector('.btn-start').style.color = 'var(--green)';
+  }
+}
+
+function adjLot(d) {
+  lotVal = Math.max(1, Math.min(500, lotVal + d));
+  updateLotDisplay();
+}
+
+function syncLotFromSlider(v) {
+  lotVal = parseInt(v);
+  updateLotDisplay();
+}
+
+function updateLotDisplay() {
+  document.getElementById('lotSize').textContent = (lotVal / 100).toFixed(2);
+  document.getElementById('lotSlider').value = lotVal;
+}
+
+function adjMaxOpen(d) {
+  maxOpenVal = Math.max(1, Math.min(10, maxOpenVal + d));
+  document.getElementById('maxOpenTrades').textContent = maxOpenVal;
+}
+
+
+function setMode(m) {
+  const modes = {
+    scalp:  'Scalp Mode — Short timeframe entries, tight SL/TP, high frequency',
+    sniper: 'Sniper Mode — Precision entries, waits for perfect setup, low frequency',
+    swing:  'Swing Mode — Holds trades longer, wider SL/TP, trend following'
+  };
+  ['Scalp','Sniper','Swing'].forEach(n => {
+    document.getElementById('mode'+n).classList.remove('active');
+  });
+  document.getElementById('mode'+m.charAt(0).toUpperCase()+m.slice(1)).classList.add('active');
+  document.getElementById('modeDesc').textContent = modes[m];
+  document.getElementById('liveMode').textContent = m.toUpperCase();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => {
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(-50%) translateY(20px)';
+  }, 2000);
+}
+</script>
+</body>
+</html>
